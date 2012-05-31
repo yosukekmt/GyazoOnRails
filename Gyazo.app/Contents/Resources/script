@@ -38,8 +38,9 @@ File.delete(tmpfile)
 # upload
 boundary = '----BOUNDARYBOUNDARY----'
 
-HOST = 'gyazo.com'
-CGI = '/upload.cgi'
+HOST = 'host'
+PORT = 'port'
+PATH =  '/images'
 UA   = 'Gyazo/1.0.1'
 
 data = <<EOF
@@ -60,13 +61,14 @@ header ={
   'User-Agent' => UA
 }
 
-Net::HTTP.start(HOST,80){|http|
-  res = http.post(CGI,data,header)
-  url = res.response.body
+Net::HTTP.start(HOST,PORT){|http|
+  res = http.post(PATH,data,header)
+  key = res.response.body
   IO.popen("pbcopy","r+"){|io|
-    io.write url
+    io.write key
     io.close
   }
+  url = "http://" + HOST + ":" + PORT + PATH + "/" + key + ".png"
   system "open #{url}"
 
   # save id
